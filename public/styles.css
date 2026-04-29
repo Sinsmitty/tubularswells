@@ -603,33 +603,69 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
 .day-slots[open] summary::after { transform: rotate(180deg); }
 .day-slots .slots-strip { margin: 0.5rem 0 0; }
 
-/* Stacked variant — three rows on the right side of the today card.
-   Each cell becomes horizontal: shaka on the left, text right of it. */
+/* Stacked variant — three collapsible rows on the right side of the today card.
+   Each <details> cell shows: shaka + label + verdict in the summary (always visible),
+   expands to swell + wind detail rows when clicked. */
 .slots-strip.stacked {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
-  width: 180px;
+  width: 200px;
 }
 .slots-strip.stacked .slot-cell {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+.slots-strip.stacked summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
   flex-direction: row;
   align-items: center;
-  text-align: left;
-  padding: 0.45rem 0.55rem;
   gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  user-select: none;
 }
+.slots-strip.stacked summary::-webkit-details-marker { display: none; }
 .slots-strip.stacked .slot-shaka { width: 36px; height: 36px; flex-shrink: 0; }
 .slots-strip.stacked .slot-body {
   display: flex;
   flex-direction: column;
   gap: 0.05rem;
   min-width: 0;
+  flex: 1;
+  text-align: left;
 }
 .slots-strip.stacked .slot-head { flex-direction: row; gap: 0.35rem; align-items: baseline; }
 .slots-strip.stacked .slot-label { font-size: 0.78rem; }
 .slots-strip.stacked .slot-time { font-size: 0.66rem; }
 .slots-strip.stacked .slot-verdict { font-size: 0.72rem; }
-.slots-strip.stacked .slot-mini { font-size: 0.7rem; }
+.slots-strip.stacked .slot-chevron {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.slots-strip.stacked .slot-cell[open] .slot-chevron { transform: rotate(180deg); }
+
+.slots-strip.stacked .slot-detail {
+  border-top: 2px dashed var(--ink);
+  padding: 0.5rem 0.6rem;
+  background: rgba(255,255,255,0.55);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: left;
+}
+.slot-detail-row { display: flex; gap: 0.4rem; align-items: baseline; }
+.slot-detail-label {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  min-width: 2.5rem;
+}
 
 /* Tablet — collapse the 3-col today card so the stacked slots flow below content. */
 @media (max-width: 780px) {

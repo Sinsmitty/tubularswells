@@ -123,10 +123,54 @@ function slotMini(slot) {
   return `${wave} · ${wind}`;
 }
 
+// Expanded detail body shown when a stacked slot cell is opened.
+function slotDetailsHTML(slot) {
+  if (!slot) return '';
+  const h = (slot.swellHeight != null && slot.swellHeight > 0) ? slot.swellHeight : slot.waveHeight;
+  const p = (slot.swellPeriod != null && slot.swellPeriod > 0) ? slot.swellPeriod : slot.wavePeriod;
+  const swellArrow = directionArrow(slot.swellDirection);
+  const windArrow = directionArrow(slot.windDirection);
+  const swellLine = (h != null && p != null)
+    ? `<span class="q-${qHeight(h)}">${fmt(h, 1)} m</span> @ <span class="q-${qPeriod(p)}">${fmt(p, 1)} s</span>${slot.swellCompass ? ' ' + slot.swellCompass : ''} ${swellArrow}`
+    : '—';
+  const gusts = slot.windGusts != null ? ` · gusts ${fmt(slot.windGusts, 0)}${slot.gusty ? ' (squally)' : ''}` : '';
+  const offshore = slot.windDirection == null ? '' : (slot.windOffshore ? ' (offshore)' : ' (onshore/cross)');
+  const windLine = slot.windSpeed != null
+    ? `<span class="q-${qWind(slot.windSpeed)}">${fmt(slot.windSpeed, 0)} km/h</span> ${slot.windCompass || ''} ${windArrow}<span class="wind-meta">${gusts}${offshore}</span>`
+    : '—';
+  return `
+    <div class="slot-detail-row"><span class="slot-detail-label">Swell</span><span>${swellLine}</span></div>
+    <div class="slot-detail-row"><span class="slot-detail-label">Wind</span><span>${windLine}</span></div>
+  `;
+}
+
 function slotsStrip(slots, opts = {}) {
   if (!slots || slots.length === 0) return '';
   const compact = !!opts.compact;
   const stacked = !!opts.stacked;
+
+  // Stacked variant on the today card: each slot is a <details> dropdown.
+  // Summary shows shaka + label + time + verdict; opening reveals swell + wind.
+  if (stacked) {
+    const cells = slots.map(s => `
+      <details class="slot-cell ${s.quality}">
+        <summary>
+          <img class="slot-shaka" src="${SHAKA_SRC[s.quality] || SHAKA_SRC.unknown}" alt="${VERDICT_LABEL[s.quality]}" />
+          <div class="slot-body">
+            <div class="slot-head">
+              <span class="slot-label">${s.label}</span>
+              <span class="slot-time">${slotTime(s)}</span>
+            </div>
+            <div class="slot-verdict">${VERDICT_LABEL[s.quality]}</div>
+          </div>
+          <span class="slot-chevron">▾</span>
+        </summary>
+        <div class="slot-detail">${slotDetailsHTML(s)}</div>
+      </details>
+    `).join('');
+    return `<div class="slots-strip stacked">${cells}</div>`;
+  }
+
   const cells = slots.map(s => `
     <div class="slot-cell ${s.quality}">
       <img class="slot-shaka" src="${SHAKA_SRC[s.quality] || SHAKA_SRC.unknown}" alt="${VERDICT_LABEL[s.quality]}" />
@@ -140,7 +184,7 @@ function slotsStrip(slots, opts = {}) {
       </div>
     </div>
   `).join('');
-  const cls = ['slots-strip', compact ? 'compact' : '', stacked ? 'stacked' : ''].filter(Boolean).join(' ');
+  const cls = ['slots-strip', compact ? 'compact' : ''].filter(Boolean).join(' ');
   return `<div class="${cls}">${cells}</div>`;
 }
 
