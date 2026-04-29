@@ -145,7 +145,10 @@ main {
   box-shadow: var(--shadow-hard);
 }
 
-.today-slots { align-self: stretch; display: flex; align-items: center; }
+/* Pin the slots column to the bottom of the today card so the top of the strip
+   lines up with the metrics row and the bottom matches the wetsuit kit's underside.
+   Mobile (≤780px) overrides this back to centred via the media query. */
+.today-slots { align-self: end; }
 
 .today-card .loading {
   grid-column: 1 / -1;
