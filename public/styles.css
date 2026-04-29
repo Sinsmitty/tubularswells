@@ -473,17 +473,6 @@ main {
 
 .day-card .day-metrics strong { color: var(--ink); font-weight: 700; }
 
-.day-card .day-wetsuit {
-  margin-top: 0.7rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--ink);
-  background: #fff;
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  border: 2px solid var(--ink);
-}
-
 /* ---------- Legend ---------- */
 .legend {
   margin-top: 0.9rem;
@@ -651,7 +640,7 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
     padding: 1rem;
     gap: 1rem;
   }
-  .today-card > div { width: 100%; }
+  .today-content, .today-slots { width: 100%; }
   .slots-strip.stacked { width: 100%; max-width: 360px; margin: 0 auto; }
   .info-pills, .wetsuit-kit { justify-content: center; }
 }

@@ -272,7 +272,6 @@ function renderUpcoming(days) {
           ${tide ? `<div class="day-tide">Tide ${tide}</div>` : ''}
           ${day.board && SURFABLE.has(day.quality) ? `<div class="day-board">Board · <strong>${day.board}</strong></div>` : ''}
         </div>
-        <div class="day-wetsuit">${shortKitSummary(day.wetsuit)}</div>
       </div>
     `;
   }).join('');
