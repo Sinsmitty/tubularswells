@@ -36,7 +36,17 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  zoom: 0.9;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Desktop-only zoom — feels right on big monitors but breaks mobile layout. */
+@media (min-width: 901px) {
+  body { zoom: 0.9; }
+}
+
+/* Mobile/tablet: scroll the background instead of fixing it (fixed kills iOS perf). */
+@media (max-width: 900px) {
+  body { background-attachment: scroll; }
 }
 
 /* ---------- Header ---------- */
@@ -181,7 +191,7 @@ main {
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.5rem;
   font-size: 0.9rem;
   margin-bottom: 0.7rem;
@@ -632,13 +642,61 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
 .slots-strip.stacked .slot-verdict { font-size: 0.72rem; }
 .slots-strip.stacked .slot-mini { font-size: 0.7rem; }
 
-@media (max-width: 600px) {
+/* Tablet — collapse the 3-col today card so the stacked slots flow below content. */
+@media (max-width: 780px) {
   .today-card {
     grid-template-columns: 1fr;
-    text-align: center;
     justify-items: center;
+    text-align: center;
+    padding: 1rem;
+    gap: 1rem;
   }
-  .shaka { width: 170px; height: 170px; }
-  h1 { text-shadow: 2px 2px 0 #fff, 4px 4px 0 var(--ink); }
-  .slots-strip.stacked { width: 100%; }
+  .today-card > div { width: 100%; }
+  .slots-strip.stacked { width: 100%; max-width: 360px; margin: 0 auto; }
+  .info-pills, .wetsuit-kit { justify-content: center; }
+}
+
+/* Phone — tighten paddings, scale headings, simplify location picker. */
+@media (max-width: 600px) {
+  header { padding: 1rem 0.75rem 0.7rem; }
+  main { padding: 0.75rem; }
+  h1 {
+    -webkit-text-stroke: 1.5px var(--ink);
+    text-shadow: 2px 2px 0 var(--ink), 4px 4px 0 rgba(0,0,0,0.25);
+  }
+  .subtitle { font-size: 0.9rem; }
+  .location-picker {
+    display: flex;
+    width: 100%;
+    max-width: 360px;
+    padding: 0.4rem 0.4rem 0.4rem 0.9rem;
+  }
+  .location-picker select { flex: 1; min-width: 0; }
+  .shaka { width: 150px; height: 150px; }
+  .today-card .verdict { font-size: clamp(1.5rem, 9vw, 2rem); }
+  .day-card { padding: 0.75rem; }
+  .day-card .shaka { width: 85px; height: 85px; }
+  .upcoming-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.7rem; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .info-pill { font-size: 0.85rem; padding: 0.3rem 0.7rem 0.3rem 0.35rem; }
+  .info-pill .banner-label { font-size: 0.65rem; padding: 0.18rem 0.5rem; }
+  .legend { font-size: 0.82rem; gap: 0.7rem; }
+}
+
+/* Narrow phones — compact slot strip becomes a vertical list, otherwise text gets squeezed. */
+@media (max-width: 420px) {
+  .slots-strip.compact {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .slots-strip.compact .slot-cell {
+    flex-direction: row;
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    gap: 0.5rem;
+  }
+  .slots-strip.compact .slot-shaka { width: 32px; height: 32px; flex-shrink: 0; }
+  .slots-strip.compact .slot-head { flex-direction: row; gap: 0.35rem; align-items: baseline; }
+  .day-card .day-metrics { font-size: 0.85rem; }
+  .today-card .verdict { font-size: clamp(1.4rem, 8vw, 1.8rem); }
 }
