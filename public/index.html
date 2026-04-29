@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tubular Swells</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>TUBULAR SWELLS</h1>
+    <p class="subtitle">by SinSmitty</p>
+    <div class="location-picker">
+      <label for="location-select">Spot</label>
+      <select id="location-select" aria-label="Choose location">
+        <option value="texel-paal-9">Texel (Paal 9)</option>
+        <option value="castricum-aan-zee">Castricum aan Zee</option>
+        <option value="wijk-aan-zee">Wijk aan Zee</option>
+        <option value="ijmuiden">IJmuiden</option>
+        <option value="zandvoort-aan-zee">Zandvoort aan Zee</option>
+        <option value="scheveningen">Scheveningen</option>
+        <option value="domburg">Domburg</option>
+        <option value="biarritz">Biarritz (FR)</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <section id="today" class="today-card" aria-live="polite">
+      <div class="loading">Loading forecast…</div>
+    </section>
+
+    <section id="upcoming" class="upcoming-grid"></section>
+
+    <p class="legend">
+      <span class="dot bad"></span> Bad
+      <span class="dot medium"></span> Marginal
+      <span class="dot good"></span> Good
+      <span class="dot awesome"></span> Tubular!
+    </p>
+  </main>
+
+  <footer>
+    <p class="sources">
+      <span>Data:</span>
+      <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener">Open-Meteo Marine API</a>
+      <small>— waves, swell, tide, sea temperature</small>
+    </p>
+    <p class="sources">
+      <a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener">Open-Meteo Weather API</a>
+      <small>— wind, gusts, air temperature</small>
+    </p>
+    <p class="sources-meta">CC BY 4.0 · <a href="https://open-meteo.com/" target="_blank" rel="noopener">open-meteo.com</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

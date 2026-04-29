@@ -1,0 +1,644 @@
+:root {
+  /* Sunny Hawaii palette, comic-book bold */
+  --bg-1: #fff3a3;
+  --bg-2: #ffd84d;
+  --card-bg: #fff8d6;
+  --shaka-bg: #fff1a8;
+
+  --ink: #1a1407;            /* near-black for outlines and text */
+  --text: #1a1407;
+  --text-dim: #6b5a3e;
+
+  /* Quality tiers — saturated, bright */
+  --bad:     #ff3b30;
+  --medium:  #ff9f1c;
+  --good:    #2ecc71;
+  --amazing: #00e676;
+
+  /* Accents */
+  --teal:   #1ec8e6;
+  --coral:  #ff5f5f;
+
+  --border: 3px solid var(--ink);
+  --border-thick: 4px solid var(--ink);
+  --shadow-hard: 6px 6px 0 var(--ink);
+  --shadow-hard-sm: 4px 4px 0 var(--ink);
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Fredoka', system-ui, -apple-system, sans-serif;
+  font-weight: 500;
+  background: url('shaka/background-shaka.webp') center / cover no-repeat fixed;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  zoom: 0.9;
+}
+
+/* ---------- Header ---------- */
+header {
+  text-align: center;
+  padding: 1.4rem 1rem 0.9rem;
+}
+
+h1 {
+  font-family: 'Bowlby One', 'Fredoka', sans-serif;
+  font-size: clamp(2rem, 5.5vw, 3rem);
+  letter-spacing: 0.02em;
+  color: #fff;
+  -webkit-text-stroke: 2px var(--ink);
+  text-shadow:
+     3px 3px 0 var(--ink),
+     6px 6px 0 rgba(0,0,0,0.25);
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.subtitle {
+  font-family: 'Fredoka', sans-serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #fff;
+  -webkit-text-stroke: 0.5px var(--ink);
+  text-shadow: 2px 2px 0 var(--ink);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.9rem;
+}
+
+/* Location dropdown — cartoony */
+.location-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--card-bg);
+  border: var(--border-thick);
+  border-radius: 999px;
+  padding: 0.45rem 0.55rem 0.45rem 1.1rem;
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.location-picker label {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.location-picker select {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%),
+                    linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
+}
+
+.location-picker select:focus { outline: 3px solid var(--medium); outline-offset: 2px; }
+
+main {
+  flex: 1;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ---------- Today's big card ---------- */
+.today-card {
+  background: var(--card-bg);
+  border: var(--border-thick);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.4rem;
+  align-items: center;
+  min-height: 0;
+  box-shadow: var(--shadow-hard);
+}
+
+.today-slots { align-self: stretch; display: flex; align-items: center; }
+
+.today-card .loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.today-card .today-name {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+  line-height: 1;
+}
+
+.today-card .verdict {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: clamp(1.7rem, 4.5vw, 2.3rem);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+  -webkit-text-stroke: 1px var(--ink);
+  text-shadow: 3px 3px 0 var(--ink);
+  line-height: 1;
+}
+
+.today-card .verdict.bad     { color: var(--bad); }
+.today-card .verdict.medium  { color: var(--medium); }
+.today-card .verdict.good    { color: var(--good); }
+.today-card .verdict.awesome { color: var(--amazing); }
+.today-card .verdict.unknown { color: var(--text-dim); text-shadow: 2px 2px 0 var(--ink); }
+
+.today-card .summary {
+  color: var(--text);
+  font-weight: 500;
+  margin-bottom: 0.7rem;
+  font-size: 0.98rem;
+  margin-top: 0.35rem;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.7rem;
+}
+
+.metrics div {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.metrics span.label {
+  display: block;
+  font-family: 'Bowlby One', sans-serif;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.2rem;
+}
+
+.metrics strong {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.metrics .sub {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* ---------- Per-metric quality colours ---------- */
+.q-bad     { color: var(--bad);     font-weight: 700; }
+.q-medium  { color: var(--medium);  font-weight: 700; }
+.q-good    { color: var(--good);    font-weight: 700; }
+.q-awesome { color: var(--amazing); font-weight: 700; }
+.q-unknown { color: var(--text-dim); }
+
+.wind-meta {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* ---------- Direction arrow (points where wind/swell is heading) ---------- */
+.dir-arrow {
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  color: var(--medium);
+  transform-origin: 50% 50%;
+  vertical-align: -0.35em;
+  filter: drop-shadow(2px 2px 0 var(--ink));
+  margin-left: 0.2em;
+}
+
+/* ---------- Info pills (tide + board) ---------- */
+.info-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.32rem 0.85rem 0.32rem 0.42rem;
+  box-shadow: 3px 3px 0 var(--ink);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.info-pill .banner-label {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #fff;
+  color: var(--ink);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+}
+
+.tide-pill  { background: var(--teal); }
+.board-pill { background: var(--coral); }
+
+.day-tide {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--teal);
+  font-weight: 600;
+}
+
+.day-board {
+  margin-top: 0.05rem;
+  font-size: 0.78rem;
+  color: var(--coral);
+  font-weight: 600;
+}
+.day-board strong { color: var(--coral); }
+
+/* ---------- Wetsuit recommendation ---------- */
+.wetsuit {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 0.55rem 0.8rem;
+  box-shadow: 3px 3px 0 var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.7rem;
+}
+
+.wetsuit-title {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.wetsuit-thickness {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+
+.wetsuit-kit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.kit-item {
+  display: inline-block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+}
+
+.kit-item.on    { color: #fff;       background: var(--good); }
+.kit-item.maybe { color: var(--ink); background: var(--medium); }
+.kit-item.off   { color: var(--text-dim); background: #f5e6b8; opacity: 0.7; text-decoration: line-through; }
+
+/* ---------- Shaka sign ---------- */
+.shaka {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* circular backdrop behind the shaka */
+.shaka::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--shaka-bg);
+  border: 4px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  z-index: 0;
+}
+
+.shaka img {
+  position: relative;
+  z-index: 2;
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 0 rgba(0,0,0,0.18));
+}
+
+.shaka.unknown::after { background: #efe7c6; }
+.shaka.unknown img    { filter: grayscale(1) opacity(0.55); }
+
+/* AMAZING — comic-book sunburst behind the circle, pulsing shaka */
+.shaka.awesome::before {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      #ffd600 0deg 14deg,
+      transparent 14deg 28deg
+    );
+  -webkit-mask: radial-gradient(circle, transparent 38%, #000 38% 70%, transparent 72%);
+          mask: radial-gradient(circle, transparent 38%, #000 38% 70%, transparent 72%);
+  animation: spin 6s linear infinite;
+  z-index: 0;
+}
+.shaka.awesome img { animation: pulse 1.6s ease-in-out infinite; }
+
+@keyframes spin  { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+/* Smaller shakas in upcoming grid */
+.day-card .shaka {
+  width: 95px;
+  height: 95px;
+  margin-bottom: 0.6rem;
+}
+.day-card .shaka::after { box-shadow: 4px 4px 0 var(--ink); }
+
+/* ---------- Upcoming grid (tomorrow + day after) ---------- */
+.upcoming-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.day-card {
+  background: var(--card-bg);
+  border: var(--border-thick);
+  border-radius: var(--radius);
+  padding: 0.85rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.day-card .day-name {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.55rem;
+  color: var(--ink);
+}
+
+.day-card .day-verdict {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  -webkit-text-stroke: 1px var(--ink);
+  text-shadow: 2px 2px 0 var(--ink);
+  line-height: 1;
+  margin: 0.25rem 0 0.55rem;
+}
+.day-card .day-verdict.bad     { color: var(--bad); }
+.day-card .day-verdict.medium  { color: var(--medium); }
+.day-card .day-verdict.good    { color: var(--good); }
+.day-card .day-verdict.awesome { color: var(--amazing); }
+.day-card .day-verdict.unknown { color: var(--text-dim); text-shadow: 1px 1px 0 var(--ink); }
+
+.day-card .day-metrics {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.day-card .day-metrics strong { color: var(--ink); font-weight: 700; }
+
+.day-card .day-wetsuit {
+  margin-top: 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+}
+
+/* ---------- Legend ---------- */
+.legend {
+  margin-top: 0.9rem;
+  text-align: center;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  gap: 1.1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+  border: 2px solid var(--ink);
+}
+.dot.bad     { background: var(--bad); }
+.dot.medium  { background: var(--medium); }
+.dot.good    { background: var(--good); }
+.dot.awesome { background: var(--amazing); }
+
+footer {
+  text-align: center;
+  padding: 0.7rem 1rem 0.9rem;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+footer a { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+footer .sources { margin: 0.25rem 0; }
+footer .sources small { color: var(--text-dim); font-weight: 500; margin-left: 0.3rem; }
+footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
+
+/* ---------- Slot strip (Morning / Noon / Evening) ---------- */
+.slots-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0.7rem 0 0.9rem;
+}
+.slot-cell {
+  background: var(--card-bg);
+  border: var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-hard-sm);
+  padding: 0.5rem 0.4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.slot-cell.bad     { background: #ffe0dd; }
+.slot-cell.medium  { background: #ffe9c8; }
+.slot-cell.good    { background: #d6f5e0; }
+.slot-cell.awesome { background: #c8ffd9; }
+.slot-cell.unknown { background: #eee; opacity: 0.7; }
+
+.slot-head {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.slot-label {
+  font-family: 'Bowlby One', 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+.slot-time { font-size: 0.7rem; color: var(--text-dim); font-weight: 600; }
+
+.slot-shaka {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+.slot-cell.unknown .slot-shaka { filter: grayscale(1); }
+
+.slot-verdict {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+}
+.slot-cell.bad     .slot-verdict { color: var(--bad); }
+.slot-cell.medium  .slot-verdict { color: var(--medium); }
+.slot-cell.good    .slot-verdict { color: var(--good); }
+.slot-cell.awesome .slot-verdict { color: var(--amazing); }
+
+.slot-mini { font-size: 0.78rem; font-weight: 600; }
+
+.slots-strip.compact .slot-cell { padding: 0.35rem 0.25rem; }
+.slots-strip.compact .slot-shaka { width: 32px; height: 32px; }
+.slots-strip.compact .slot-label { font-size: 0.72rem; }
+.slots-strip.compact .slot-time { font-size: 0.62rem; }
+.slots-strip.compact .slot-verdict { font-size: 0.65rem; }
+
+/* Day-card slots dropdown */
+.day-slots { margin: 0.4rem 0 0.6rem; }
+.day-slots summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--card-bg);
+  border: var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: var(--shadow-hard-sm);
+  user-select: none;
+}
+.day-slots summary::-webkit-details-marker { display: none; }
+.day-slots summary::after {
+  content: '▾';
+  font-size: 0.85rem;
+  transition: transform 0.15s ease;
+}
+.day-slots[open] summary::after { transform: rotate(180deg); }
+.day-slots .slots-strip { margin: 0.5rem 0 0; }
+
+/* Stacked variant — three rows on the right side of the today card.
+   Each cell becomes horizontal: shaka on the left, text right of it. */
+.slots-strip.stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 180px;
+}
+.slots-strip.stacked .slot-cell {
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  gap: 0.5rem;
+}
+.slots-strip.stacked .slot-shaka { width: 36px; height: 36px; flex-shrink: 0; }
+.slots-strip.stacked .slot-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+.slots-strip.stacked .slot-head { flex-direction: row; gap: 0.35rem; align-items: baseline; }
+.slots-strip.stacked .slot-label { font-size: 0.78rem; }
+.slots-strip.stacked .slot-time { font-size: 0.66rem; }
+.slots-strip.stacked .slot-verdict { font-size: 0.72rem; }
+.slots-strip.stacked .slot-mini { font-size: 0.7rem; }
+
+@media (max-width: 600px) {
+  .today-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+    justify-items: center;
+  }
+  .shaka { width: 170px; height: 170px; }
+  h1 { text-shadow: 2px 2px 0 #fff, 4px 4px 0 var(--ink); }
+  .slots-strip.stacked { width: 100%; }
+}
