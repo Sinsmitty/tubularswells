@@ -13,7 +13,7 @@
   --bad:     #ff3b30;
   --medium:  #ff9f1c;
   --good:    #2ecc71;
-  --amazing: #00e676;
+  --amazing: #00b8ff;  /* Tubular — vivid sky-blue, distinct from --good green */
 
   /* Accents */
   --teal:   #1ec8e6;
@@ -128,6 +128,167 @@ main {
   width: 100%;
   margin: 0 auto;
   padding: 1rem;
+}
+
+/* The `hidden` attribute defaults to display:none in UA stylesheet, but author rules
+   like `.today-card { display: grid }` win on specificity. Force it back. */
+[hidden] { display: none !important; }
+
+/* ---------- View tabs (Summary / Table) ---------- */
+/* Tabs visually attach to the card below: inactive tabs sit just above the card's
+   top border (the black line continues under them); the active tab overlaps the
+   border by 4px and matches card-bg so it reads as part of the card. */
+.view-tabs {
+  display: flex;
+  gap: 0;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+.tab-btn {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: #ffe89a;
+  border: var(--border-thick);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  margin: 0;
+  transition: background 0.15s ease;
+}
+.tab-btn + .tab-btn { margin-left: -4px; } /* share the divider border between tabs */
+.tab-btn:first-child { margin-left: 1rem; }
+.tab-btn:hover { background: #ffd84d; }
+.tab-btn.active {
+  background: var(--card-bg);
+  cursor: default;
+  z-index: 1;
+}
+
+/* ---------- Forecast table (Windguru-style) ---------- */
+.forecast-table {
+  background: var(--card-bg);
+  border: var(--border-thick);
+  border-radius: var(--radius);
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-hard);
+}
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+.forecast-table table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.forecast-table th, .forecast-table td {
+  padding: 0.3rem 0.35rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(26,20,7,0.15);
+  white-space: nowrap;
+  background: #fff;
+}
+.forecast-table thead th {
+  background: var(--card-bg);
+  border-bottom: 2px solid var(--ink);
+}
+.forecast-table .day-header {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.4rem;
+  background: var(--medium);
+  color: #fff;
+  -webkit-text-stroke: 0.4px var(--ink);
+}
+.forecast-table .hour-header {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  padding: 0.3rem 0.35rem;
+}
+.forecast-table .row-label {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: left;
+  background: var(--card-bg);
+  color: var(--ink);
+  padding: 0.4rem 0.7rem 0.4rem 0.6rem;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  border-right: 2px solid var(--ink);
+  min-width: 5.5rem;
+}
+.forecast-table .row-label small {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: 0.15rem;
+}
+.forecast-table .corner { background: var(--card-bg); border-bottom: 2px solid var(--ink); }
+.forecast-table .day-sep { border-left: 2px solid var(--ink); }
+
+.forecast-table .dir-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  line-height: 1;
+}
+.forecast-table .dir-cell .dir-arrow {
+  width: 1.1em;
+  height: 1.1em;
+  margin: 0;
+}
+.forecast-table .dir-cell small {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.forecast-table .table-shaka {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+/* Quality tinting at the cell (box) level — text stays neutral, the background
+   colour carries the signal. Mirrors slot-cell tints. */
+.forecast-table td.cell-bad,
+.forecast-table td.cell-medium,
+.forecast-table td.cell-good,
+.forecast-table td.cell-awesome,
+.forecast-table td.cell-unknown {
+  color: var(--ink);
+  font-weight: 700;
+}
+.forecast-table td.cell-unknown { color: var(--text-dim); font-weight: 600; }
+
+.forecast-table .cell-bad     { background: #ff8a80; }
+.forecast-table .cell-medium  { background: #ffc266; }
+.forecast-table .cell-good    { background: #6ee59a; }
+.forecast-table .cell-awesome { background: #44d6ff; }
+.forecast-table .cell-unknown { background: #ddd; }
+
+@media (max-width: 600px) {
+  .forecast-table { padding: 0.4rem; }
+  .forecast-table table { font-size: 0.74rem; }
+  .forecast-table .row-label { min-width: 4.5rem; padding: 0.35rem 0.45rem; }
+  .forecast-table th, .forecast-table td { padding: 0.25rem 0.25rem; }
 }
 
 /* ---------- Today's big card ---------- */
@@ -538,7 +699,7 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
 .slot-cell.bad     { background: #ffe0dd; }
 .slot-cell.medium  { background: #ffe9c8; }
 .slot-cell.good    { background: #d6f5e0; }
-.slot-cell.awesome { background: #c8ffd9; }
+.slot-cell.awesome { background: #cfeefc; }
 .slot-cell.unknown { background: #eee; opacity: 0.7; }
 
 .slot-head {
@@ -572,11 +733,28 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
 
 .slot-mini { font-size: 0.78rem; font-weight: 600; }
 
-.slots-strip.compact .slot-cell { padding: 0.35rem 0.25rem; }
+.slots-strip.compact .slot-cell { padding: 0; overflow: hidden; }
+.slots-strip.compact .slot-cell > .slot-shaka,
+.slots-strip.compact .slot-cell > .slot-body { padding-left: 0.3rem; padding-right: 0.3rem; }
+.slots-strip.compact .slot-cell > .slot-shaka { margin-top: 0.4rem; }
+.slots-strip.compact .slot-cell > .slot-body { padding-bottom: 0.35rem; }
 .slots-strip.compact .slot-shaka { width: 32px; height: 32px; }
 .slots-strip.compact .slot-label { font-size: 0.72rem; }
 .slots-strip.compact .slot-time { font-size: 0.62rem; }
 .slots-strip.compact .slot-verdict { font-size: 0.65rem; }
+.slots-strip.compact .slot-detail {
+  margin: 0.35rem -0.3rem 0;          /* break out of slot-body padding */
+  padding: 0.4rem 0.5rem;
+  border-top: 2px dashed var(--ink);
+  background: rgba(255,255,255,0.55);  /* match today-card stacked variant */
+  font-size: 0.7rem;
+  line-height: 1.4;
+  text-align: left;
+}
+.slots-strip.compact .slot-detail-row { gap: 0.3rem; flex-wrap: wrap; }
+.slots-strip.compact .slot-detail-label { min-width: 2.2rem; font-size: 0.58rem; }
+.slots-strip.compact .slot-detail .dir-arrow { width: 1em; height: 1em; }
+.slots-strip.compact .slot-detail .wind-meta { display: block; font-size: 0.65rem; }
 
 /* Day-card slots dropdown */
 .day-slots { margin: 0.4rem 0 0.6rem; }

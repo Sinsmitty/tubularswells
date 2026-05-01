@@ -31,9 +31,16 @@
   </header>
 
   <main>
+    <div class="view-tabs" role="tablist" aria-label="Forecast view">
+      <button class="tab-btn active" role="tab" data-view="summary" aria-selected="true">Summary</button>
+      <button class="tab-btn" role="tab" data-view="table" aria-selected="false">Table</button>
+    </div>
+
     <section id="today" class="today-card" aria-live="polite">
       <div class="loading">Loading forecast…</div>
     </section>
+
+    <section id="forecast-table" class="forecast-table" hidden></section>
 
     <section id="upcoming" class="upcoming-grid"></section>
 

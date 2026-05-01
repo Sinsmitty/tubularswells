@@ -180,7 +180,9 @@ function slotsStrip(slots, opts = {}) {
           <span class="slot-time">${slotTime(s)}</span>
         </div>
         <div class="slot-verdict">${VERDICT_LABEL[s.quality]}</div>
-        ${compact ? '' : `<div class="slot-mini">${slotMini(s)}</div>`}
+        ${compact
+          ? `<div class="slot-detail">${slotDetailsHTML(s)}</div>`
+          : `<div class="slot-mini">${slotMini(s)}</div>`}
       </div>
     </div>
   `).join('');
@@ -321,18 +323,151 @@ function renderUpcoming(days) {
   }).join('');
 }
 
+// ---------- Windguru-style hourly table ----------
+function renderTable(hourly) {
+  const el = document.getElementById('forecast-table');
+  if (!hourly || hourly.length === 0) {
+    el.innerHTML = `<div class="loading">No hourly data available.</div>`;
+    return;
+  }
+
+  // Group entries by date so we can draw day-separator borders + day headers.
+  const dayBoundaries = [];
+  let prevDate = null;
+  hourly.forEach((h, i) => {
+    const date = h.time.slice(0, 10);
+    if (date !== prevDate) {
+      dayBoundaries.push({ date, startIdx: i, count: 1 });
+      prevDate = date;
+    } else {
+      dayBoundaries[dayBoundaries.length - 1].count++;
+    }
+  });
+
+  const dayHeaderCells = dayBoundaries.map((d, i) =>
+    `<th class="day-header${i > 0 ? ' day-sep' : ''}" colspan="${d.count}">${fmtDate(d.date, { weekday: 'short', day: 'numeric', month: 'short' })}</th>`
+  ).join('');
+
+  // Mark the column index of each day's first entry, so the matching <td>s get a left border.
+  const dayStartIdxSet = new Set(dayBoundaries.slice(1).map(d => d.startIdx));
+  const sepCls = i => dayStartIdxSet.has(i) ? ' day-sep' : '';
+
+  const hourCells = hourly.map((h, i) =>
+    `<th class="hour-header${sepCls(i)}">${h.time.slice(11, 13)}</th>`
+  ).join('');
+
+  const row = (label, cells, cls = '') =>
+    `<tr class="${cls}"><th class="row-label">${label}</th>${cells}</tr>`;
+
+  const cell = (i, content, cls = '') =>
+    `<td class="${cls}${sepCls(i)}">${content}</td>`;
+
+  // Wind speed
+  const windRow = hourly.map((h, i) =>
+    cell(i, h.windSpeed != null ? fmt(h.windSpeed, 0) : '—',
+         h.windSpeed != null ? `cell-${qWind(h.windSpeed)}` : '')
+  ).join('');
+
+  // Gusts — bad-tinted when squally, otherwise neutral medium tint
+  const gustRow = hourly.map((h, i) => {
+    if (h.windGusts == null) return cell(i, '—');
+    const tier = h.gusty ? 'bad' : 'medium';
+    return cell(i, fmt(h.windGusts, 0), `cell-${tier}`);
+  }).join('');
+
+  // Wind direction (arrow + compass) — no tint, informational
+  const windDirRow = hourly.map((h, i) =>
+    cell(i, h.windDirection != null
+      ? `<div class="dir-cell">${directionArrow(h.windDirection)}<small>${h.windCompass || ''}</small></div>`
+      : '—')
+  ).join('');
+
+  // Wave (swell) height
+  const waveRow = hourly.map((h, i) => {
+    const v = (h.swellHeight != null && h.swellHeight > 0) ? h.swellHeight : h.waveHeight;
+    return cell(i, v != null ? fmt(v, 1) : '—',
+                v != null ? `cell-${qHeight(v)}` : '');
+  }).join('');
+
+  // Wave (swell) period
+  const periodRow = hourly.map((h, i) => {
+    const v = (h.swellPeriod != null && h.swellPeriod > 0) ? h.swellPeriod : h.wavePeriod;
+    return cell(i, v != null ? fmt(v, 0) : '—',
+                v != null ? `cell-${qPeriod(v)}` : '');
+  }).join('');
+
+  // Swell direction
+  const swellDirRow = hourly.map((h, i) =>
+    cell(i, h.swellDirection != null
+      ? `<div class="dir-cell">${directionArrow(h.swellDirection)}<small>${h.swellCompass || ''}</small></div>`
+      : '—')
+  ).join('');
+
+  // Air temp
+  const airRow = hourly.map((h, i) =>
+    cell(i, h.airTemp != null ? fmt(h.airTemp, 0) : '—')
+  ).join('');
+
+  // Water temp
+  const waterRow = hourly.map((h, i) =>
+    cell(i, h.waterTemp != null ? fmt(h.waterTemp, 1) : '—')
+  ).join('');
+
+  // Verdict shaka per hour — shaka itself carries the signal, no cell tint.
+  const verdictRow = hourly.map((h, i) =>
+    cell(i,
+      `<img class="table-shaka" src="${SHAKA_SRC[h.quality] || SHAKA_SRC.unknown}" alt="${VERDICT_LABEL[h.quality]}" title="${VERDICT_LABEL[h.quality]}" />`)
+  ).join('');
+
+  el.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th class="row-label corner"></th>${dayHeaderCells}</tr>
+          <tr><th class="row-label">Hour</th>${hourCells}</tr>
+        </thead>
+        <tbody>
+          ${row('Wind <small>km/h</small>', windRow)}
+          ${row('Gusts <small>km/h</small>', gustRow)}
+          ${row('Wave <small>m</small>', waveRow)}
+          ${row('Period <small>s</small>', periodRow)}
+          ${row('Wind dir', windDirRow)}
+          ${row('Swell dir', swellDirRow)}
+          ${row('Air <small>°C</small>', airRow)}
+          ${row('Sea <small>°C</small>', waterRow)}
+          ${row('Verdict', verdictRow)}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function setView(view) {
+  const showTable = view === 'table';
+  document.getElementById('today').hidden = showTable;
+  document.getElementById('upcoming').hidden = showTable;
+  document.getElementById('forecast-table').hidden = !showTable;
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const active = btn.dataset.view === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+}
+
 async function loadForecast(locationKey) {
   const todayEl = document.getElementById('today');
   todayEl.innerHTML = `<div class="loading">Loading forecast…</div>`;
   document.getElementById('upcoming').innerHTML = '';
+  document.getElementById('forecast-table').innerHTML = '';
 
   try {
     const res = await fetch(`/api/forecast?location=${encodeURIComponent(locationKey)}`);
     if (!res.ok) throw new Error(`API ${res.status}`);
-    const { forecast, now } = await res.json();
+    const { forecast, now, hourly } = await res.json();
     if (!forecast || forecast.length === 0) throw new Error('No forecast data');
     renderToday(forecast[0], now);
     renderUpcoming(forecast);
+    renderTable(hourly);
   } catch (err) {
     todayEl.innerHTML = `<div class="loading">Couldn’t load forecast: ${err.message}</div>`;
     console.error(err);
@@ -348,6 +483,9 @@ function init() {
   select.addEventListener('change', () => {
     localStorage.setItem(STORAGE_KEY, select.value);
     loadForecast(select.value);
+  });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => setView(btn.dataset.view));
   });
   loadForecast(select.value);
 }

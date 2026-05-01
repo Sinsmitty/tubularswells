@@ -446,7 +446,45 @@ async function fetchForecast(location) {
     return day;
   });
 
-  return { forecast, now };
+  // Hourly table — sample every 3 hours across the forecast horizon for the Windguru-style grid.
+  const TABLE_HOURS = [0, 3, 6, 9, 12, 15, 18, 21];
+  const hourly = [];
+  for (let i = 0; i < marine.hourly.time.length; i++) {
+    const t = marine.hourly.time[i];
+    const hr = parseInt(t.slice(11, 13), 10);
+    if (!TABLE_HOURS.includes(hr)) continue;
+    const wIdx = weather.hourly.time.indexOf(t);
+    if (wIdx === -1) continue;
+
+    const swellHeight = marine.hourly.swell_wave_height[i];
+    const swellPeriod = marine.hourly.swell_wave_period[i];
+    const swellDirection = marine.hourly.swell_wave_direction[i];
+    const waveHeight = marine.hourly.wave_height[i];
+    const wavePeriod = marine.hourly.wave_period[i];
+    const windWaveHeight = marine.hourly.wind_wave_height[i];
+    const windSpeed = weather.hourly.wind_speed_10m[wIdx];
+    const windGusts = weather.hourly.wind_gusts_10m[wIdx];
+    const windDirection = weather.hourly.wind_direction_10m[wIdx];
+    const airTemp = weather.hourly.temperature_2m[wIdx];
+    const waterTemp = marine.hourly.sea_surface_temperature[i];
+
+    const entry = {
+      time: t,
+      swellHeight, swellPeriod, swellDirection,
+      waveHeight, wavePeriod, windWaveHeight,
+      windSpeed, windGusts, windDirection,
+      airTemp, waterTemp
+    };
+    entry.gustFactor = (windGusts != null && windSpeed > 0) ? windGusts / windSpeed : null;
+    entry.gusty = entry.gustFactor != null && entry.gustFactor > GUST_FACTOR_THRESHOLD;
+    entry.quality = classify(entry, offshoreRange);
+    entry.windCompass = compassDirection(windDirection);
+    entry.swellCompass = compassDirection(swellDirection);
+    entry.windOffshore = windDirection != null && isOffshore(windDirection, offshoreRange);
+    hourly.push(entry);
+  }
+
+  return { forecast, now, hourly };
 }
 
 app.get('/api/locations', (req, res) => {
@@ -459,11 +497,12 @@ app.get('/api/forecast', async (req, res) => {
   const location = LOCATIONS[key];
   if (!location) return res.status(400).json({ error: `Unknown location: ${key}` });
   try {
-    const { forecast, now } = await fetchForecast(location);
+    const { forecast, now, hourly } = await fetchForecast(location);
     res.json({
       location: { key: location.key, name: location.name, latitude: location.latitude, longitude: location.longitude },
       forecast,
-      now
+      now,
+      hourly
     });
   } catch (err) {
     console.error('Forecast fetch failed:', err);
