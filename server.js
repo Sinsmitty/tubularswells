@@ -28,27 +28,30 @@ const LOCATIONS = {
     timezone: 'Europe/Amsterdam',
     offshoreRange: [45, 135]
   },
+  // Wijk / IJmuiden / Zandvoort sit inside Open-Meteo's nearshore high-res marine
+  // grid that only goes 3 days out. Slight offshore nudges land in the deep-water
+  // grid that gives 7 days, while still representing the same swell exposure.
   'wijk-aan-zee': {
     key: 'wijk-aan-zee',
     name: 'Wijk aan Zee',
-    latitude: 52.4928,
-    longitude: 4.5947,
+    latitude: 52.50,
+    longitude: 4.55,
     timezone: 'Europe/Amsterdam',
     offshoreRange: [45, 135]
   },
   'ijmuiden': {
     key: 'ijmuiden',
     name: 'IJmuiden',
-    latitude: 52.460,
-    longitude: 4.555,
+    latitude: 52.50,
+    longitude: 4.45,
     timezone: 'Europe/Amsterdam',
     offshoreRange: [45, 135]
   },
   'zandvoort-aan-zee': {
     key: 'zandvoort-aan-zee',
     name: 'Zandvoort aan Zee',
-    latitude: 52.371,
-    longitude: 4.529,
+    latitude: 52.37,
+    longitude: 4.30,
     timezone: 'Europe/Amsterdam',
     offshoreRange: [45, 135]
   },

@@ -42,7 +42,11 @@
 
     <section id="forecast-table" class="forecast-table" hidden></section>
 
-    <section id="upcoming" class="upcoming-grid"></section>
+    <div class="upcoming-wrap">
+      <button class="scroll-arrow left" type="button" aria-label="Scroll to earlier days" hidden>◀</button>
+      <section id="upcoming" class="upcoming-grid"></section>
+      <button class="scroll-arrow right" type="button" aria-label="Scroll to later days" hidden>▶</button>
+    </div>
 
     <p class="legend">
       <span class="dot bad"></span> Bad

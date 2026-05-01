@@ -475,6 +475,19 @@ function setView(view) {
   });
 }
 
+// Show/hide the upcoming row's left/right arrows based on scroll position.
+function updateScrollArrows() {
+  const grid = document.getElementById('upcoming');
+  if (!grid) return;
+  const wrap = grid.parentElement;
+  const left = wrap.querySelector('.scroll-arrow.left');
+  const right = wrap.querySelector('.scroll-arrow.right');
+  const max = grid.scrollWidth - grid.clientWidth;
+  // Tiny epsilon to avoid 0.5px flicker.
+  left.hidden  = grid.scrollLeft <= 2;
+  right.hidden = grid.scrollLeft >= max - 2 || max <= 2;
+}
+
 async function loadForecast(locationKey) {
   const todayEl = document.getElementById('today');
   todayEl.innerHTML = `<div class="loading">Loading forecast…</div>`;
@@ -489,6 +502,8 @@ async function loadForecast(locationKey) {
     renderToday(forecast[0], now);
     renderUpcoming(forecast);
     renderTable(hourly);
+    // Cards just rendered — re-measure and show/hide arrows.
+    requestAnimationFrame(updateScrollArrows);
   } catch (err) {
     todayEl.innerHTML = `<div class="loading">Couldn’t load forecast: ${err.message}</div>`;
     console.error(err);
@@ -508,6 +523,26 @@ function init() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => setView(btn.dataset.view));
   });
+
+  // Upcoming row scroll arrows — click scrolls one card; scroll/resize updates visibility.
+  const grid = document.getElementById('upcoming');
+  const wrap = grid.parentElement;
+  const cardStep = () => {
+    const card = grid.querySelector('.day-card');
+    if (!card) return grid.clientWidth * 0.8;
+    const style = getComputedStyle(grid);
+    const gap = parseFloat(style.columnGap || style.gap || 0) || 0;
+    return card.getBoundingClientRect().width + gap;
+  };
+  wrap.querySelector('.scroll-arrow.left').addEventListener('click', () => {
+    grid.scrollBy({ left: -cardStep(), behavior: 'smooth' });
+  });
+  wrap.querySelector('.scroll-arrow.right').addEventListener('click', () => {
+    grid.scrollBy({ left: cardStep(), behavior: 'smooth' });
+  });
+  grid.addEventListener('scroll', updateScrollArrows, { passive: true });
+  window.addEventListener('resize', updateScrollArrows);
+
   loadForecast(select.value);
 }
 
