@@ -79,7 +79,7 @@ const LOCATIONS = {
   }
 };
 const DEFAULT_LOCATION = 'wijk-aan-zee';
-const FORECAST_DAYS = 3;
+const FORECAST_DAYS = 7;
 
 // ============================================================
 // SURF QUALITY THRESHOLDS — from Tim's "shaka conditions.xlsx"
