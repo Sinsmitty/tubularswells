@@ -171,21 +171,42 @@ function slotsStrip(slots, opts = {}) {
     return `<div class="slots-strip stacked">${cells}</div>`;
   }
 
-  const cells = slots.map(s => `
-    <div class="slot-cell ${s.quality}">
-      <img class="slot-shaka" src="${SHAKA_SRC[s.quality] || SHAKA_SRC.unknown}" alt="${VERDICT_LABEL[s.quality]}" />
-      <div class="slot-body">
-        <div class="slot-head">
-          <span class="slot-label">${s.label}</span>
-          <span class="slot-time">${slotTime(s)}</span>
+  // Compact uses the same shape as the stacked variant on the NOW card:
+  // a summary block (shaka + label + verdict) plus a sibling slot-detail panel.
+  // That way the detail spans the cell's full width on mobile, instead of being
+  // squeezed into the slot-body column when the cell goes horizontal.
+  const cells = slots.map(s => {
+    if (compact) {
+      return `
+        <div class="slot-cell ${s.quality}">
+          <div class="slot-summary">
+            <img class="slot-shaka" src="${SHAKA_SRC[s.quality] || SHAKA_SRC.unknown}" alt="${VERDICT_LABEL[s.quality]}" />
+            <div class="slot-body">
+              <div class="slot-head">
+                <span class="slot-label">${s.label}</span>
+                <span class="slot-time">${slotTime(s)}</span>
+              </div>
+              <div class="slot-verdict">${VERDICT_LABEL[s.quality]}</div>
+            </div>
+          </div>
+          <div class="slot-detail">${slotDetailsHTML(s)}</div>
         </div>
-        <div class="slot-verdict">${VERDICT_LABEL[s.quality]}</div>
-        ${compact
-          ? `<div class="slot-detail">${slotDetailsHTML(s)}</div>`
-          : `<div class="slot-mini">${slotMini(s)}</div>`}
+      `;
+    }
+    return `
+      <div class="slot-cell ${s.quality}">
+        <img class="slot-shaka" src="${SHAKA_SRC[s.quality] || SHAKA_SRC.unknown}" alt="${VERDICT_LABEL[s.quality]}" />
+        <div class="slot-body">
+          <div class="slot-head">
+            <span class="slot-label">${s.label}</span>
+            <span class="slot-time">${slotTime(s)}</span>
+          </div>
+          <div class="slot-verdict">${VERDICT_LABEL[s.quality]}</div>
+          <div class="slot-mini">${slotMini(s)}</div>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
   const cls = ['slots-strip', compact ? 'compact' : ''].filter(Boolean).join(' ');
   return `<div class="${cls}">${cells}</div>`;
 }

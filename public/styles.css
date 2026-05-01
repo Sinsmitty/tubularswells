@@ -733,22 +733,43 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
 
 .slot-mini { font-size: 0.78rem; font-weight: 600; }
 
-.slots-strip.compact .slot-cell { padding: 0; overflow: hidden; }
-.slots-strip.compact .slot-cell > .slot-shaka,
-.slots-strip.compact .slot-cell > .slot-body { padding-left: 0.3rem; padding-right: 0.3rem; }
-.slots-strip.compact .slot-cell > .slot-shaka { margin-top: 0.4rem; }
-.slots-strip.compact .slot-cell > .slot-body { padding-bottom: 0.35rem; }
-.slots-strip.compact .slot-shaka { width: 32px; height: 32px; }
+/* Compact cell = summary block on top + full-width detail panel below.
+   Same shape as the NOW card's stacked <details> so mobile/desktop look
+   consistent and the detail panel always spans the cell. */
+.slots-strip.compact .slot-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  text-align: left;
+  overflow: hidden;
+}
+.slots-strip.compact .slot-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.45rem 0.4rem;
+  text-align: center;
+}
+.slots-strip.compact .slot-shaka { width: 32px; height: 32px; flex-shrink: 0; }
+.slots-strip.compact .slot-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  min-width: 0;
+}
+.slots-strip.compact .slot-head { flex-direction: column; align-items: center; gap: 0; }
 .slots-strip.compact .slot-label { font-size: 0.72rem; }
 .slots-strip.compact .slot-time { font-size: 0.62rem; }
 .slots-strip.compact .slot-verdict { font-size: 0.65rem; }
 .slots-strip.compact .slot-detail {
-  margin: 0.35rem -0.3rem 0;          /* break out of slot-body padding */
-  padding: 0.4rem 0.5rem;
+  padding: 0.45rem 0.55rem;
   border-top: 2px dashed var(--ink);
-  background: rgba(255,255,255,0.55);  /* match today-card stacked variant */
-  font-size: 0.7rem;
-  line-height: 1.4;
+  background: rgba(255,255,255,0.55);
+  font-size: 0.72rem;
+  line-height: 1.45;
   text-align: left;
 }
 .slots-strip.compact .slot-detail-row { gap: 0.3rem; flex-wrap: wrap; }
@@ -889,20 +910,28 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
   .legend { font-size: 0.82rem; gap: 0.7rem; }
 }
 
-/* Narrow phones — compact slot strip becomes a vertical list, otherwise text gets squeezed. */
+/* Narrow phones — compact slot strip becomes a vertical list. The summary row
+   inside each cell goes horizontal (shaka left, label + verdict right) so it
+   reads like the NOW card's stacked <details> rows; the detail panel still
+   spans the full cell width below. */
 @media (max-width: 420px) {
   .slots-strip.compact {
     grid-template-columns: 1fr;
-    gap: 0.4rem;
+    gap: 0.45rem;
   }
-  .slots-strip.compact .slot-cell {
+  .slots-strip.compact .slot-summary {
     flex-direction: row;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.6rem;
     text-align: left;
-    padding: 0.4rem 0.5rem;
-    gap: 0.5rem;
   }
-  .slots-strip.compact .slot-shaka { width: 32px; height: 32px; flex-shrink: 0; }
+  .slots-strip.compact .slot-shaka { width: 36px; height: 36px; }
+  .slots-strip.compact .slot-body { align-items: flex-start; flex: 1; }
   .slots-strip.compact .slot-head { flex-direction: row; gap: 0.35rem; align-items: baseline; }
+  .slots-strip.compact .slot-label { font-size: 0.78rem; }
+  .slots-strip.compact .slot-time { font-size: 0.66rem; }
+  .slots-strip.compact .slot-verdict { font-size: 0.72rem; }
   .day-card .day-metrics { font-size: 0.85rem; }
   .today-card .verdict { font-size: clamp(1.4rem, 8vw, 1.8rem); }
 }
