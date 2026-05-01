@@ -6,13 +6,40 @@ const VERDICT_LABEL = {
   unknown: 'No data'
 };
 
+// `bad` is an array — we rotate through the lines on the today card every
+// few seconds for a bit of personality on flat days.
 const VERDICT_BLURB = {
-  bad: 'Stay home. Conditions are flat or blown out.',
+  bad: [
+    'Stay home. Conditions are flat or blown out.',
+    'Perfect time to rinse the pee smell from your wetsuit.',
+    'Maybe you should learn how to kite.',
+    'E-foils suddenly seem tempting…'
+  ],
   medium: 'Surfable, but not great. Worth a paddle if you’re desperate.',
   good: 'Solid waves. Get out there.',
   awesome: 'Epic conditions. Drop everything and go surf.',
   unknown: 'Forecast not yet available for this day.'
 };
+const BLURB_ROTATE_MS = 5000;
+let blurbTimer = null;
+
+function blurbFor(quality) {
+  const v = VERDICT_BLURB[quality];
+  return Array.isArray(v) ? v[0] : v;
+}
+
+function startBlurbRotation(quality) {
+  if (blurbTimer) { clearInterval(blurbTimer); blurbTimer = null; }
+  const lines = VERDICT_BLURB[quality];
+  if (!Array.isArray(lines) || lines.length < 2) return;
+  let idx = 0;
+  blurbTimer = setInterval(() => {
+    const el = document.querySelector('#today .summary');
+    if (!el) { clearInterval(blurbTimer); blurbTimer = null; return; }
+    idx = (idx + 1) % lines.length;
+    el.textContent = lines[idx];
+  }, BLURB_ROTATE_MS);
+}
 
 // Quality tiers where a board recommendation makes sense
 const SURFABLE = new Set(['medium', 'good', 'awesome']);
@@ -290,7 +317,7 @@ function renderToday(day, now) {
     <div class="today-content">
       <div class="today-name">${headlineLabel}</div>
       <div class="verdict ${src.quality}">${VERDICT_LABEL[src.quality]}</div>
-      <p class="summary">${VERDICT_BLURB[src.quality]}</p>
+      <p class="summary">${blurbFor(src.quality)}</p>
       <div class="info-pills">${tideBanner}${boardPill}</div>
       <div class="metrics">
         <div>
@@ -313,6 +340,7 @@ function renderToday(day, now) {
     </div>
     <div class="today-slots">${slotsStrip(day.slots, { stacked: true })}</div>
   `;
+  startBlurbRotation(src.quality);
 }
 
 function renderUpcoming(days) {

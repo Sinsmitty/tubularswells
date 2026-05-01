@@ -786,6 +786,10 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
 
 .slot-mini { font-size: 0.78rem; font-weight: 600; }
 
+/* Compact strip stacks slots vertically on every viewport — day cards are
+   too narrow to read three slots side-by-side anyway. */
+.slots-strip.compact { grid-template-columns: 1fr; }
+
 /* Compact cell = summary block on top + full-width detail panel below.
    Same shape as the NOW card's stacked <details> so mobile/desktop look
    consistent and the detail panel always spans the cell. */
