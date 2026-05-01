@@ -583,12 +583,27 @@ main {
 }
 .day-card .shaka::after { box-shadow: 4px 4px 0 var(--ink); }
 
-/* ---------- Upcoming grid (tomorrow + day after) ---------- */
+/* ---------- Upcoming row (tomorrow + following days) ---------- */
+/* Horizontal scroller so any number of day cards stays on a single row
+   instead of wrapping. Snap-aligned so a swipe lands a card neatly. */
 .upcoming-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   gap: 0.9rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0.25rem 0.25rem 0.7rem;
+  margin: 0 -0.25rem;             /* let cards' shadows breathe past the main padding */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
+.upcoming-grid::-webkit-scrollbar { height: 8px; }
+.upcoming-grid::-webkit-scrollbar-thumb {
+  background: var(--ink);
+  border-radius: 999px;
+}
+.upcoming-grid::-webkit-scrollbar-track { background: transparent; }
 
 .day-card {
   background: var(--card-bg);
@@ -600,6 +615,8 @@ main {
   flex-direction: column;
   align-items: center;
   box-shadow: var(--shadow-hard-sm);
+  flex: 0 0 240px;
+  scroll-snap-align: start;
 }
 
 .day-card .day-name {
@@ -903,7 +920,8 @@ footer .sources-meta { margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8; }
   .today-card .verdict { font-size: clamp(1.5rem, 9vw, 2rem); }
   .day-card { padding: 0.75rem; }
   .day-card .shaka { width: 85px; height: 85px; }
-  .upcoming-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.7rem; }
+  .upcoming-grid { gap: 0.7rem; padding: 0.2rem 0.2rem 0.6rem; }
+  .day-card { flex: 0 0 200px; }
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .info-pill { font-size: 0.85rem; padding: 0.3rem 0.7rem 0.3rem 0.35rem; }
   .info-pill .banner-label { font-size: 0.65rem; padding: 0.18rem 0.5rem; }
